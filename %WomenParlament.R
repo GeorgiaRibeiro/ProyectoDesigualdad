@@ -1,31 +1,40 @@
-##Trabalho: Desigualdade de Gênero no Legislativo
+#================================================#
+# Universidad Diego Portales
+# Curso de ....
+#================================================#
+# Desigualdade de Genero no Legislativo
+# Geba
+# 01/05/2019
+#================================================#
 
-getwd()
-setwd("/home/geba/Documentos/UDP/Desigualdad")
+# carregar pacotes
+library(stringr); library(ggplot2)
 
+# carregar dados
 base <- read.csv("WomenInParlament1998-2008.csv", stringsAsFactors=FALSE)
 
-#Substituindo valores vazios por 0
-library(stringr)
-str_replace_all(base$X1998, "NA", "0")
-View(base$X1998)
+# PS: Nao se converte valores faltantes em 0, nunca
+# substituindo valores vazios em NA 
+base$`1998`[base$`1998` == "..."] = NA 
 
-#convertendo variáveis numéricas
-as.numeric(base$X1998) 
-as.numeric(base$X2008)
-class(base$X1998) 
-class(base$X2008)
+# convertendo variáveis numéricas
+base$`1998` = as.numeric(base$`1998`)
 
 #grafico
-library(ggplot2)
-ggplot(base, aes(x=base$Country, y=base$X1998)) +
+ggplot(base, aes(x=base$Country, y=base$`1998`)) +
   geom_bar(stat="identity")
 
-#estética
-ggplot(base, aes(x=reorder(Country, X2008), y=X2008)) +
+# ordenar valores crescentes
+base$Country = factor(base$Country, levels = base$Country[order(base$`2008`)])
+
+# estetica
+ggplot(data = base, aes(x = Country, y=`2008`)) +
   geom_bar(fill="#0072B2",stat="identity") + 
+  geom_label(aes(label = `2008`), size = 2.4)+
   theme(axis.text.x = element_text(angle = 90, hjust = 1)) + 
-  theme_minimal() +
-  xlab("Países") + ylab("% de Mujeres en el Parlamento")
+  labs(x = "Países", y = "% de Mujeres en el Parlamento")+
+  coord_flip()+
+  theme_minimal() 
+
 
   
